@@ -1,0 +1,18 @@
+#include <SoftwareSerial.h> #include <Wire.h> #include <Adafruit_GFX.h> //Adafruit GFX and SSD1306 library is for OLE display #include <Adafruit_SSD1306.h> 
+ 
+#define SCREEN_WIDTH 128 // OLED display width, in pixels #define SCREEN_HEIGHT 64 // OLED display height, in pixels 
+#define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin) Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET); 
+ 
+#define RE 8 //Define RE and DE pins of the sensor #define DE 7 
+ 
+//const byte code[]= {0x01, 0x03, 0x00, 0x1e, 0x00, 0x03, 0x65, 0xCD}; //this works as a command to retrieve the data from using modbus from the and picker sensor const byte nitro[] = {0x01,0x03, 0x00, 0x1e, 0x00, 0x01, 0xe4, 0x0c}; const byte phos[] = {0x01,0x03, 0x00, 0x1f, 0x00, 0x01, 0xb5, 0xcc}; const byte pota[] = {0x01,0x03, 0x00, 0x20, 0x00, 0x01, 0x85, 0xc0}; 
+ 
+byte values[11]; SoftwareSerial mod(2,3); //Tx and Rx pin as pin 2 and 3 
+ 
+void setup() { Serial.begin(9600); //initialize serial begin and mode begin mod.begin(4800); pinMode(RE, OUTPUT);// keeping RE and DE as outputs pinMode(DE, OUTPUT); 
+ 
+display.begin(SSD1306_SWITCHCAPVCC, 0x3C); //initialize with the I2C addr 0x3C (128x64) delay(500); display.clearDisplay(); display.setCursor(25, 15); display.setTextSize(1); display.setTextColor(WHITE); display.println(" NPK Sensor"); display.setCursor(25, 35); display.setTextSize(1); display.print("Initializing"); display.display(); delay(3000); } 
+ 
+void loop() { byte val1,val2,val3; //we assign three variables as value 1, value 2 and value 3 val1 = nitrogen(); //assigning value 1 as nitrogen delay(250); val2 = phosphorous(); //assigning value 2 as phosphorous delay(250); val3 = potassium(); //assigning value 3 as potassium delay(250); 
+ 
+Serial.print("Nitrogen: "); //to dis
